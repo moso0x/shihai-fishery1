@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -113,7 +114,7 @@ function Contact() {
               ["Where", "P.O. Box 9100-0200 Nairobi, Kenya"],
               ["Email", "Qizewu781@gmail.com"],
               ["Phone", "+254701763456"],
-              ["Hours", "Mon — Sat · 8:00 – 18:00 EAT"],
+              ["Hours", "Everyday · 8:00 – 18:00 EAT"],
             ].map(([k, v]) => (
               <motion.div
                 key={k}
