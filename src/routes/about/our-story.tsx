@@ -4,7 +4,7 @@ import { motion, useInView } from "framer-motion";
 
 import story_img1 from "@/assets/story/fry-fish.jpg";
 import story_img2 from "@/assets/story/story-1.jpg";
-import story_img5 from "@/assets/story/story.jpeg";
+import story_img5 from "@/assets/story/story-4.jpeg";
 import story_img6 from "@/assets/tilapia.jpeg";
 
 // TanStack Router Route Definition
@@ -69,7 +69,7 @@ export function OurStory() {
         {/* BACKGROUND IMAGE & OVERLAYS */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <motion.img
-            src={story_img6}
+            src={story_img5}
             alt="SHIHAI Aquaculture Journey"
             className="h-full w-full object-cover brightness-[0.70]"
             initial={{ scale: 1.1 }}

@@ -24,28 +24,30 @@ export function OurVision() {
 
   return (
     <>
-      {/* HERO SECTION - CLEAN HERO IMAGE WITHOUT OVERLAY */}
-      <section ref={heroRef} className="relative isolate overflow-hidden">
+      {/* HERO SECTION - NO OVERLAY COLOR */}
+      <section 
+        ref={heroRef} 
+        className="relative h-[380px] sm:h-[450px] md:h-[520px] w-full isolate flex items-center overflow-hidden"
+      >
         <div className="absolute inset-0 -z-10">
           <img
             src={vision_img}
             alt="SHIHAI Vision"
-            className="h-full w-full flex object-cover"
+            className="h-full w-full object-cover object-center"
           />
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 pb-24 pt-32 md:pb-36 md:pt-48">
+        <div className="mx-auto w-full max-w-7xl px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl text-primary-foreground"
+            className="max-w-3xl"
           >
-            
-            <h1 className="mt-4 font-display text-5xl md:text-7xl lg:text-8xl">
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl text-gray-200">
               Our <em className="not-italic text-accent">Vision</em>
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-primary-foreground/90">
+            <p className="mt-4 max-w-xl  sm:text-lg md:text-xl text-gray-100">
               Building a sustainable, accessible, and community-first fisheries model across East Africa.
             </p>
           </motion.div>
@@ -173,21 +175,9 @@ export function OurVision() {
             We promote eco‑friendly, sustainable modern aquaculture concepts. While meeting market demand, we protect local ecosystems, making fisheries a "green bank" benefiting future generations.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-2">
-            {["Eco-Friendly", "Sustainable", "Blue Economy", "Future Generations"].map((tag, i) => (
-              <span
-                key={i}
-                className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        
         </motion.div>
       </section>
-
-      {/* CALL TO ACTION */}
-     
     </>
   );
 }
