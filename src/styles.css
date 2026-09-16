@@ -1,6 +1,10 @@
+/* CORRECT ORDER */
 @import "tailwindcss" source(none);
-@source "../src";
 @import "tw-animate-css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 
