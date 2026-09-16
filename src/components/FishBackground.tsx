@@ -8,14 +8,15 @@ interface Fish {
   vy: number;
   size: number;
   angle: number;
-  speed: number;
-  color: string;
-  finColor: string;
+  maxSpeed: number;
+  maxForce: number;
+  bodyOpacity: number;
+  finOpacity: number;
   wiggle: number;
   wiggleSpeed: number;
   isTemporary?: boolean;
   spawnTime?: number;
-  duration?: number; // In milliseconds
+  duration?: number;
   opacity: number;
 }
 
@@ -34,6 +35,13 @@ interface Ripple {
   radius: number;
   maxRadius: number;
   opacity: number;
+}
+
+// Utility: Smoothly interpolate angles across -PI/PI boundary
+function lerpAngle(start: number, end: number, amount: number): number {
+  let shortest = ((end - start + Math.PI) % (Math.PI * 2)) - Math.PI;
+  if (shortest < -Math.PI) shortest += Math.PI * 2;
+  return start + shortest * amount;
 }
 
 export function FishBackground() {
@@ -70,14 +78,13 @@ export function FishBackground() {
       mouse.y = e.clientY;
       mouse.active = true;
 
-      // Spawn subtle water ripple on mouse move
-      if (Math.random() < 0.15) {
+      if (Math.random() < 0.12) {
         ripples.push({
           x: e.clientX,
           y: e.clientY,
           radius: 2,
-          maxRadius: Math.random() * 25 + 15,
-          opacity: 0.4,
+          maxRadius: Math.random() * 20 + 12,
+          opacity: 0.25,
         });
       }
     };
@@ -86,7 +93,6 @@ export function FishBackground() {
       mouse.active = false;
     };
 
-    // Global Click Handler: Trigger Bubble Burst & Temporary Fish on Buttons
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       const isButtonClick =
@@ -97,48 +103,46 @@ export function FishBackground() {
       const clickX = e.clientX;
       const clickY = e.clientY;
 
-      // 1. Always create a water ripple on click
       ripples.push({
         x: clickX,
         y: clickY,
-        radius: 5,
-        maxRadius: 50,
-        opacity: 0.8,
+        radius: 4,
+        maxRadius: 45,
+        opacity: 0.5,
       });
 
-      // 2. Trigger Bubble Burst
-      const burstCount = isButtonClick ? 18 : 8;
+      const burstCount = isButtonClick ? 16 : 6;
       for (let i = 0; i < burstCount; i++) {
         bubbles.push({
-          x: clickX + (Math.random() - 0.5) * 20,
-          y: clickY + (Math.random() - 0.5) * 20,
-          radius: Math.random() * 5 + 2,
-          vy: -(Math.random() * 2.5 + 1),
-          vx: (Math.random() - 0.5) * 2,
-          opacity: 0.9,
+          x: clickX + (Math.random() - 0.5) * 15,
+          y: clickY + (Math.random() - 0.5) * 15,
+          radius: Math.random() * 4 + 2,
+          vy: -(Math.random() * 2 + 1),
+          vx: (Math.random() - 0.5) * 1.5,
+          opacity: 0.6,
         });
       }
 
-      // 3. Spawn Temporary Fish if a button/link is clicked
       if (isButtonClick) {
-        const tempFishCount = Math.floor(Math.random() * 2) + 1; // 1 to 2 extra fish
+        const tempFishCount = Math.floor(Math.random() * 2) + 2;
         for (let i = 0; i < tempFishCount; i++) {
           fishes.push({
             id: Math.random(),
-            x: clickX + (Math.random() - 0.5) * 40,
-            y: clickY + (Math.random() - 0.5) * 40,
-            vx: (Math.random() - 0.5) * 4,
-            vy: (Math.random() - 0.5) * 4,
-            size: Math.random() * 10 + 12,
+            x: clickX + (Math.random() - 0.5) * 30,
+            y: clickY + (Math.random() - 0.5) * 30,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: Math.random() * 8 + 10,
             angle: Math.random() * Math.PI * 2,
-            speed: Math.random() * 2 + 1.8,
-            color: "rgba(212, 170, 30, 0.85)",
-            finColor: "rgba(235, 190, 50, 0.6)",
+            maxSpeed: Math.random() * 1.2 + 2.8,
+            maxForce: 0.08,
+            bodyOpacity: 0.25,
+            finOpacity: 0.12,
             wiggle: Math.random() * Math.PI,
             wiggleSpeed: 0.25,
             isTemporary: true,
             spawnTime: Date.now(),
-            duration: 6000, // 6 seconds lifetime
+            duration: 6000,
             opacity: 0,
           });
         }
@@ -150,116 +154,89 @@ export function FishBackground() {
     window.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("click", handleGlobalClick);
 
-    // Initial Permanent Fish Pool
-    const colors = [
-      { body: "rgba(212, 170, 30, 0.75)", fin: "rgba(240, 190, 40, 0.5)" },
-      { body: "rgba(56, 189, 248, 0.65)", fin: "rgba(125, 211, 252, 0.45)" },
-      { body: "rgba(255, 255, 255, 0.55)", fin: "rgba(255, 255, 255, 0.35)" },
-    ];
-
-    const fishes: Fish[] = Array.from({ length: 10 }, (_, i) => {
-      const palette = colors[i % colors.length];
+    // Initial Monochromatic Fish Pool
+    const fishes: Fish[] = Array.from({ length: 24 }, (_, i) => {
+      const initialAngle = Math.random() * Math.PI * 2;
       return {
         id: i,
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
-        size: Math.random() * 10 + 12,
-        angle: 0,
-        speed: Math.random() * 1.5 + 1.2,
-        color: palette.body,
-        finColor: palette.fin,
+        vx: Math.cos(initialAngle) * 2,
+        vy: Math.sin(initialAngle) * 2,
+        size: Math.random() * 6 + 10,
+        angle: initialAngle,
+        maxSpeed: Math.random() * 0.8 + 2.2,
+        maxForce: 0.05,
+        bodyOpacity: Math.random() * 0.15 + 0.12, // Subtle translucent white
+        finOpacity: Math.random() * 0.08 + 0.05,
         wiggle: Math.random() * Math.PI * 2,
-        wiggleSpeed: 0.15 + Math.random() * 0.1,
+        wiggleSpeed: 0.15,
         opacity: 1,
       };
     });
 
-    // Draw Detailed Fish with Dynamic Wiggling Fins
     const drawFish = (f: Fish) => {
       ctx.save();
       ctx.translate(f.x, f.y);
       ctx.rotate(f.angle);
       ctx.globalAlpha = f.opacity;
+      
+      // Blend seamlessly into whatever content/background sits behind canvas
+      ctx.globalCompositeOperation = "overlay";
 
-      const tailAngle = Math.sin(f.wiggle) * 0.35;
+      const speedRatio = Math.sqrt(f.vx * f.vx + f.vy * f.vy) / f.maxSpeed;
+      const tailAngle = Math.sin(f.wiggle) * (0.25 + speedRatio * 0.2);
 
-      // Main Body
-      ctx.fillStyle = f.color;
+      const bodyColor = `rgba(255, 255, 255, ${f.bodyOpacity})`;
+      const finColor = `rgba(255, 255, 255, ${f.finOpacity})`;
+
+      // Body
+      ctx.fillStyle = bodyColor;
       ctx.beginPath();
-      ctx.ellipse(0, 0, f.size, f.size / 2.4, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 0, f.size, f.size / 2.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Side Fins
-      ctx.fillStyle = f.finColor;
+      ctx.fillStyle = finColor;
       ctx.beginPath();
-      ctx.ellipse(
-        -f.size * 0.1,
-        -f.size * 0.4,
-        f.size * 0.4,
-        f.size * 0.18,
-        -Math.PI / 4,
-        0,
-        Math.PI * 2
-      );
+      ctx.ellipse(-f.size * 0.1, -f.size * 0.4, f.size * 0.35, f.size * 0.15, -Math.PI / 4, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.beginPath();
-      ctx.ellipse(
-        -f.size * 0.1,
-        f.size * 0.4,
-        f.size * 0.4,
-        f.size * 0.18,
-        Math.PI / 4,
-        0,
-        Math.PI * 2
-      );
+      ctx.ellipse(-f.size * 0.1, f.size * 0.4, f.size * 0.35, f.size * 0.15, Math.PI / 4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Jointed Wiggling Tail
+      // Jointed Tail
       ctx.save();
-      ctx.translate(-f.size + 2, 0);
+      ctx.translate(-f.size + 1, 0);
       ctx.rotate(tailAngle);
 
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.lineTo(-f.size * 0.7, -f.size * 0.45);
-      ctx.quadraticCurveTo(
-        -f.size * 0.4,
-        0,
-        -f.size * 0.7,
-        f.size * 0.45
-      );
+      ctx.lineTo(-f.size * 0.65, -f.size * 0.4);
+      ctx.quadraticCurveTo(-f.size * 0.35, 0, -f.size * 0.65, f.size * 0.4);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
 
-      // Eye
-      ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+      // Minimal Eye Silhouette
+      ctx.fillStyle = `rgba(255, 255, 255, ${f.bodyOpacity * 1.5})`;
       ctx.beginPath();
-      ctx.arc(f.size * 0.55, -f.size * 0.12, f.size * 0.15, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
-      ctx.beginPath();
-      ctx.arc(f.size * 0.6, -f.size * 0.12, f.size * 0.07, 0, Math.PI * 2);
+      ctx.arc(f.size * 0.5, -f.size * 0.12, f.size * 0.12, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
     };
 
-    // Main Render Loop
     const render = () => {
       ctx.clearRect(0, 0, width, height);
-
       const now = Date.now();
 
-      // 1. Render Ripples
+      // 1. Ripples
       for (let i = ripples.length - 1; i >= 0; i--) {
         const r = ripples[i];
-        r.radius += 0.8;
-        r.opacity -= 0.015;
+        r.radius += 0.6;
+        r.opacity -= 0.012;
 
         if (r.opacity <= 0 || r.radius >= r.maxRadius) {
           ripples.splice(i, 1);
@@ -269,18 +246,18 @@ export function FishBackground() {
         ctx.save();
         ctx.beginPath();
         ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(180, 220, 255, ${r.opacity})`;
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${r.opacity * 0.3})`;
+        ctx.lineWidth = 1;
         ctx.stroke();
         ctx.restore();
       }
 
-      // 2. Render Bubbles
+      // 2. Bubbles
       for (let i = bubbles.length - 1; i >= 0; i--) {
         const b = bubbles[i];
         b.y += b.vy;
         b.x += b.vx;
-        b.opacity -= 0.008;
+        b.opacity -= 0.009;
 
         if (b.opacity <= 0 || b.y < -10) {
           bubbles.splice(i, 1);
@@ -290,22 +267,21 @@ export function FishBackground() {
         ctx.save();
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${b.opacity * 0.4})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${b.opacity * 0.15})`;
         ctx.fill();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${b.opacity * 0.8})`;
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${b.opacity * 0.3})`;
+        ctx.lineWidth = 0.8;
         ctx.stroke();
         ctx.restore();
       }
 
-      // 3. Render & Update Fish
+      // 3. Fish Flocking & Physics Engine
       for (let i = fishes.length - 1; i >= 0; i--) {
         const f = fishes[i];
 
-        // Handle temporary fish life cycle (Fade in -> Swim -> Fade out -> Remove)
         if (f.isTemporary && f.spawnTime && f.duration) {
           const elapsed = now - f.spawnTime;
-          const fadeTime = 800; // 800ms fade in/out
+          const fadeTime = 800;
 
           if (elapsed < fadeTime) {
             f.opacity = elapsed / fadeTime;
@@ -321,38 +297,105 @@ export function FishBackground() {
           }
         }
 
-        // Swimming Motion & Steering
+        let sepX = 0, sepY = 0, sepCount = 0;
+        let aliX = 0, aliY = 0, aliCount = 0;
+        let cohX = 0, cohY = 0, cohCount = 0;
+
+        const perceptionRadius = 90;
+        const separationRadius = 35;
+
+        for (let j = 0; j < fishes.length; j++) {
+          if (i === j) continue;
+          const other = fishes[j];
+
+          const dx = other.x - f.x;
+          const dy = other.y - f.y;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < perceptionRadius * perceptionRadius && distSq > 0) {
+            const dist = Math.sqrt(distSq);
+
+            if (dist < separationRadius) {
+              sepX -= (dx / dist) / dist;
+              sepY -= (dy / dist) / dist;
+              sepCount++;
+            }
+
+            aliX += other.vx;
+            aliY += other.vy;
+            aliCount++;
+
+            cohX += other.x;
+            cohY += other.y;
+            cohCount++;
+          }
+        }
+
+        let ax = 0;
+        let ay = 0;
+
+        if (sepCount > 0) {
+          ax += sepX * 2.2;
+          ay += sepY * 2.2;
+        }
+
+        if (aliCount > 0) {
+          aliX /= aliCount;
+          aliY /= aliCount;
+          ax += (aliX - f.vx) * 0.05;
+          ay += (aliY - f.vy) * 0.05;
+        }
+
+        if (cohCount > 0) {
+          cohX = cohX / cohCount - f.x;
+          cohY = cohY / cohCount - f.y;
+          ax += cohX * 0.005;
+          ay += cohY * 0.005;
+        }
+
         if (mouse.active) {
           const dx = mouse.x - f.x;
           const dy = mouse.y - f.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist > 60) {
-            f.vx += (dx / dist) * 0.06;
-            f.vy += (dy / dist) * 0.06;
+          if (dist < 220 && dist > 10) {
+            const targetVx = (dx / dist) * f.maxSpeed;
+            const targetVy = (dy / dist) * f.maxSpeed;
+            ax += (targetVx - f.vx) * 0.08;
+            ay += (targetVy - f.vy) * 0.08;
           }
-        } else {
-          f.vx += (Math.random() - 0.5) * 0.08;
-          f.vy += (Math.random() - 0.5) * 0.08;
         }
 
-        // Limit speed
-        const currSpeed = Math.sqrt(f.vx * f.vx + f.vy * f.vy);
-        if (currSpeed > f.speed) {
-          f.vx = (f.vx / currSpeed) * f.speed;
-          f.vy = (f.vy / currSpeed) * f.speed;
+        const margin = 80;
+        if (f.x < margin) ax += 0.08 * (1 - f.x / margin);
+        if (f.x > width - margin) ax -= 0.08 * (1 - (width - f.x) / margin);
+        if (f.y < margin) ay += 0.08 * (1 - f.y / margin);
+        if (f.y > height - margin) ay -= 0.08 * (1 - (height - f.y) / margin);
+
+        const forceMag = Math.sqrt(ax * ax + ay * ay);
+        if (forceMag > f.maxForce) {
+          ax = (ax / forceMag) * f.maxForce;
+          ay = (ay / forceMag) * f.maxForce;
+        }
+
+        f.vx += ax;
+        f.vy += ay;
+
+        const speed = Math.sqrt(f.vx * f.vx + f.vy * f.vy);
+        if (speed > f.maxSpeed) {
+          f.vx = (f.vx / speed) * f.maxSpeed;
+          f.vy = (f.vy / speed) * f.maxSpeed;
+        } else if (speed < f.maxSpeed * 0.3) {
+          f.vx = (f.vx / (speed || 1)) * (f.maxSpeed * 0.3);
+          f.vy = (f.vy / (speed || 1)) * (f.maxSpeed * 0.3);
         }
 
         f.x += f.vx;
         f.y += f.vy;
-        f.angle = Math.atan2(f.vy, f.vx);
-        f.wiggle += f.wiggleSpeed;
 
-        // Screen wrap
-        if (f.x < -30) f.x = width + 30;
-        if (f.x > width + 30) f.x = -30;
-        if (f.y < -30) f.y = height + 30;
-        if (f.y > height + 30) f.y = -30;
+        const targetAngle = Math.atan2(f.vy, f.vx);
+        f.angle = lerpAngle(f.angle, targetAngle, 0.12);
+        f.wiggle += f.wiggleSpeed * (speed / f.maxSpeed);
 
         drawFish(f);
       }
