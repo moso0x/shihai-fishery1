@@ -63,7 +63,7 @@ export function Newsletter() {
           />
 
           {/* FILM GRAIN */}
-        
+    
 
           {/* LEFT CONTENT */}
           <motion.div
