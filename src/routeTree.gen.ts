@@ -9,19 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProductRouteImport } from './routes/product'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BusinessRouteImport } from './routes/business'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutWhyChooseUsRouteImport } from './routes/about/why-choose-us'
+import { Route as AboutWhatWeAreDoingRouteImport } from './routes/about/what-we-are-doing'
+import { Route as AboutOurVisionRouteImport } from './routes/about/our-vision'
+import { Route as AboutOurStoryRouteImport } from './routes/about/our-story'
 
+const ProductRoute = ProductRouteImport.update({
+  id: '/product',
+  path: '/product',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessRoute = BusinessRouteImport.update({
-  id: '/business',
-  path: '/business',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -34,55 +38,112 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutWhyChooseUsRoute = AboutWhyChooseUsRouteImport.update({
+  id: '/why-choose-us',
+  path: '/why-choose-us',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutWhatWeAreDoingRoute = AboutWhatWeAreDoingRouteImport.update({
+  id: '/what-we-are-doing',
+  path: '/what-we-are-doing',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutOurVisionRoute = AboutOurVisionRouteImport.update({
+  id: '/our-vision',
+  path: '/our-vision',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutOurStoryRoute = AboutOurStoryRouteImport.update({
+  id: '/our-story',
+  path: '/our-story',
+  getParentRoute: () => AboutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/business': typeof BusinessRoute
+  '/about': typeof AboutRouteWithChildren
   '/contact': typeof ContactRoute
+  '/product': typeof ProductRoute
+  '/about/our-story': typeof AboutOurStoryRoute
+  '/about/our-vision': typeof AboutOurVisionRoute
+  '/about/what-we-are-doing': typeof AboutWhatWeAreDoingRoute
+  '/about/why-choose-us': typeof AboutWhyChooseUsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/business': typeof BusinessRoute
+  '/about': typeof AboutRouteWithChildren
   '/contact': typeof ContactRoute
+  '/product': typeof ProductRoute
+  '/about/our-story': typeof AboutOurStoryRoute
+  '/about/our-vision': typeof AboutOurVisionRoute
+  '/about/what-we-are-doing': typeof AboutWhatWeAreDoingRoute
+  '/about/why-choose-us': typeof AboutWhyChooseUsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/business': typeof BusinessRoute
+  '/about': typeof AboutRouteWithChildren
   '/contact': typeof ContactRoute
+  '/product': typeof ProductRoute
+  '/about/our-story': typeof AboutOurStoryRoute
+  '/about/our-vision': typeof AboutOurVisionRoute
+  '/about/what-we-are-doing': typeof AboutWhatWeAreDoingRoute
+  '/about/why-choose-us': typeof AboutWhyChooseUsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/business' | '/contact'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/product'
+    | '/about/our-story'
+    | '/about/our-vision'
+    | '/about/what-we-are-doing'
+    | '/about/why-choose-us'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/business' | '/contact'
-  id: '__root__' | '/' | '/about' | '/business' | '/contact'
+  to:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/product'
+    | '/about/our-story'
+    | '/about/our-vision'
+    | '/about/what-we-are-doing'
+    | '/about/why-choose-us'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/product'
+    | '/about/our-story'
+    | '/about/our-vision'
+    | '/about/what-we-are-doing'
+    | '/about/why-choose-us'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  BusinessRoute: typeof BusinessRoute
+  AboutRoute: typeof AboutRouteWithChildren
   ContactRoute: typeof ContactRoute
+  ProductRoute: typeof ProductRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/product': {
+      id: '/product'
+      path: '/product'
+      fullPath: '/product'
+      preLoaderRoute: typeof ProductRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business': {
-      id: '/business'
-      path: '/business'
-      fullPath: '/business'
-      preLoaderRoute: typeof BusinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -99,14 +160,58 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about/why-choose-us': {
+      id: '/about/why-choose-us'
+      path: '/why-choose-us'
+      fullPath: '/about/why-choose-us'
+      preLoaderRoute: typeof AboutWhyChooseUsRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/what-we-are-doing': {
+      id: '/about/what-we-are-doing'
+      path: '/what-we-are-doing'
+      fullPath: '/about/what-we-are-doing'
+      preLoaderRoute: typeof AboutWhatWeAreDoingRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/our-vision': {
+      id: '/about/our-vision'
+      path: '/our-vision'
+      fullPath: '/about/our-vision'
+      preLoaderRoute: typeof AboutOurVisionRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/our-story': {
+      id: '/about/our-story'
+      path: '/our-story'
+      fullPath: '/about/our-story'
+      preLoaderRoute: typeof AboutOurStoryRouteImport
+      parentRoute: typeof AboutRoute
+    }
   }
 }
 
+interface AboutRouteChildren {
+  AboutOurStoryRoute: typeof AboutOurStoryRoute
+  AboutOurVisionRoute: typeof AboutOurVisionRoute
+  AboutWhatWeAreDoingRoute: typeof AboutWhatWeAreDoingRoute
+  AboutWhyChooseUsRoute: typeof AboutWhyChooseUsRoute
+}
+
+const AboutRouteChildren: AboutRouteChildren = {
+  AboutOurStoryRoute: AboutOurStoryRoute,
+  AboutOurVisionRoute: AboutOurVisionRoute,
+  AboutWhatWeAreDoingRoute: AboutWhatWeAreDoingRoute,
+  AboutWhyChooseUsRoute: AboutWhyChooseUsRoute,
+}
+
+const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  BusinessRoute: BusinessRoute,
+  AboutRoute: AboutRouteWithChildren,
   ContactRoute: ContactRoute,
+  ProductRoute: ProductRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

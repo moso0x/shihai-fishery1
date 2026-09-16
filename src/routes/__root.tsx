@@ -10,6 +10,8 @@ import {
 import appCss from "../styles.css?url";
 import { SiteLayout } from "@/components/SiteLayout";
 import CookieBanner from "@/components/CookieBanner";
+import { FishBackground } from "@/components/FishBackground";
+
 
 function NotFoundComponent() {
   return (
@@ -98,6 +100,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SiteLayout />
+      <FishBackground />
     </QueryClientProvider>
   );
 }

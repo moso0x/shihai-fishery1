@@ -3,24 +3,26 @@ import { motion } from "framer-motion";
 const steps = [
   {
     n: "01",
-    t: "Inquiry",
+    t: "30+ Years of Industry Excellence",
     d: "Tell us volume, frequency and destination — by form, call or WhatsApp.",
   },
   {
     n: "02",
-    t: "Quote & Sample",
+    t: "Mature & Proven Technology",
     d: "We confirm pricing and arrange a sample batch where applicable.",
   },
   {
     n: "03",
-    t: "Harvest",
+    t: "Premium Lake Victoria Water Source",
     d: "Fish are harvested fresh from our cages on your delivery day.",
   },
   {
     n: "04",
-    t: "Cold Delivery",
+    t: "Eco-Friendly Sustainable Agriculture",
     d: "Iced or chilled transport direct to your kitchen, store or facility.",
   },
+   
+
 ];
 
 const containerVariants = {
@@ -63,8 +65,9 @@ export function Process() {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute left-0 top-20 -z-10 h-[28rem] w-[28rem] rounded-full bg-cyan-400/10 blur-3xl"
+        className="absolute left-0  -z-10 h-[28rem] w-[28rem] rounded-full bg-cyan-400/10 blur-3xl"
       />
+    
 
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
         {/* HEADER */}
@@ -78,13 +81,9 @@ export function Process() {
           viewport={{ once: true, amount: 0.3 }}
           className="max-w-2xl"
         >
-          <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            From Lake to Plate
-          </div>
+         
 
-          <h2 className="mt-4 font-display text-4xl leading-tight md:text-5xl">
-            A simple, four-step ordering process.
-          </h2>
+          
         </motion.div>
 
         {/* PROCESS GRID */}
@@ -143,9 +142,9 @@ export function Process() {
               </motion.h3>
 
               {/* DESCRIPTION */}
-              <p className="relative z-10 text-sm leading-relaxed text-muted-foreground">
+              {/* <p className="relative z-10 text-sm leading-relaxed text-muted-foreground">
                 {s.d}
-              </p>
+              </p> */}
 
               {/* ANIMATED LINE */}
               <motion.div
