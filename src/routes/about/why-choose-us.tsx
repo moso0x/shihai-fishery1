@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import whychoose_img1 from "@/assets/whychoose/feeding.jpg";
-import whychoose_img2 from "@/assets/whychoose/grading.jpg";
+import whychoose_img2 from "@/assets/market.jpeg";
 import whychoose_img3 from "@/assets/whychoose/ponds.jpg";
 
 // Route Definition

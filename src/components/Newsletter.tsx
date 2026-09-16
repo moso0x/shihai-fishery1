@@ -63,7 +63,7 @@ export function Newsletter() {
           />
 
           {/* FILM GRAIN */}
-          <div className="absolute inset-0 opacity-[0.05] mix-blend-soft-light bg-[url('/noise.png')]" />
+        
 
           {/* LEFT CONTENT */}
           <motion.div
